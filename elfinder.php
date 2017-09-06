@@ -192,61 +192,49 @@ if(!isset($_SESSION['authorized'])){
 
 	<!-- elfinder initialization  -->
 	<script>
-		$(function() {
-			$('#elfinder').elfinder(
-				// 1st Arg - options
-				{
-					// Disable CSS auto loading
-					cssAutoLoad : false,
-
-					// Base URL to css/*, js/*
-					baseUrl : './',
-
-					// Connector URL
-					url : 'php/connector.basicauth.php',
-
-					// Callback when a file is double-clicked
-					getFileCallback : function(file) {
-						// ...
-					},
+		(function($){
+			var i18nPath = 'js/i18n',
+				start = function(lng) {
+					$().ready(function() {
+						var elf = $('#elfinder').elfinder({
+							// Documentation for client options:
+							// https://github.com/Studio-42/elFinder/wiki/Client-configuration-options
+							baseUrl : './',
+							lang : lng,
+							url	 : 'php/connector.php'	// connector URL (REQUIRED)
+						}).elfinder('instance');
+					});
 				},
-				
-				// 2nd Arg - before boot up function
-				function(fm, extraObj) {
-					// `init` event callback function
-					fm.bind('init', function() {
-						// Optional for Japanese decoder "extras/encoding-japanese.min"
-						delete fm.options.rawStringDecoder;
-						if (fm.lang === 'jp') {
-							fm.loadScript(
-								[ fm.baseUrl + 'js/extras/encoding-japanese.min.js' ],
-								function() {
-									if (window.Encoding && Encoding.convert) {
-										fm.options.rawStringDecoder = function(s) {
-											return Encoding.convert(s,{to:'UNICODE',type:'string'});
-										};
-									}
-								},
-								{ loadType: 'tag' }
-							);
-						}
-					});
-					
-					// Optional for set document.title dynamically.
-					var title = document.title;
-					fm.bind('open', function() {
-						var path = '',
-							cwd  = fm.cwd();
-						if (cwd) {
-							path = fm.path(cwd.hash) || null;
-						}
-						document.title = path? path + ':' + title : title;
-					}).bind('destroy', function() {
-						document.title = title;
-					});
-				}
-			);
-		});
+				loct = window.location.search,
+				full_lng, locm, lng;
+			
+			// detect language
+			if (loct && (locm = loct.match(/lang=([a-zA-Z_-]+)/))) {
+				full_lng = locm[1];
+			} else {
+				full_lng = (navigator.browserLanguage || navigator.language || navigator.userLanguage);
+			}
+			lng = full_lng.substr(0,2);
+			if (lng == 'ja') lng = 'jp';
+			else if (lng == 'pt') lng = 'pt_BR';
+			else if (lng == 'zh') lng = (full_lng.substr(0,5) == 'zh-tw')? 'zh_TW' : 'zh_CN';
+	
+			if (lng != 'en') {
+				$.ajax({
+					url : i18nPath+'/elfinder.'+lng+'.js',
+					cache : true,
+					dataType : 'script'
+				})
+				.done(function() {
+					start(lng);
+				})
+				.fail(function() {
+					start('fr');
+				});
+			} else {
+				start(lng);
+			}
+		})(jQuery);
 		
 
 	</script>
