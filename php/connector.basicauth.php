@@ -7,7 +7,7 @@ define('ROOT_PATH', 'c:/files');
 define('ROOT_PATH_AUDITEUR', 'c:/files/auditeurs');
 
 /***** auth section *****/
-$admins = array('pomadec' => true);
+$admins = array('admin' => true);
 
 session_start();
 
@@ -20,7 +20,7 @@ if(isset($_GET['logout'])){
 
 /******************************/
 
-$username = $_SERVER['PHP_AUTH_USER'];
+$username = $_SESSION['ELFINDER_AUTH_USER'];
 if (isset($_GET['status'])) {
 	echo '{"uname": "'.(isset($username)? $username: '').'"}';
 	exit();
@@ -32,6 +32,8 @@ include_once dirname(__FILE__).DIRECTORY_SEPARATOR.'elFinderConnector.class.php'
 include_once dirname(__FILE__).DIRECTORY_SEPARATOR.'elFinder.class.php';
 include_once dirname(__FILE__).DIRECTORY_SEPARATOR.'elFinderVolumeDriver.class.php';
 include_once dirname(__FILE__).DIRECTORY_SEPARATOR.'elFinderVolumeLocalFileSystem.class.php';
+include_once dirname(__FILE__).DIRECTORY_SEPARATOR.'logger.class.php';
+
 // Required for MySQL storage connector
 // include_once dirname(__FILE__).DIRECTORY_SEPARATOR.'elFinderVolumeMySQL.class.php';
 // Required for FTP connector support
@@ -71,6 +73,10 @@ function roaccess($attr, $path, $data, $volume) {
 		? !($attr == 'read' || $attr == 'write')    // set read+write to false, other (locked+hidden) set to true
 		: ($attr == 'read' || $attr == 'locked');   // else read only
 }
+
+
+$logFile = 'c:/files/temp/log_'.date('Y-m-d').'.txt';
+$myLogger = new elFinderSimpleLogger($logFile);
 /**
  * si c'est un dossier => ok
  * sinon, créer le dossier et n'afficher que celui là
@@ -116,8 +122,9 @@ if($isAdmin){
 			)
 	);
 }
-
-
+$opts['bind'] = array(
+		'mkdir mkfile rename duplicate upload rm paste' => array($myLogger, 'log'),
+);
 // run elFinder
 $connector = new elFinderConnector(new elFinder($opts));
 $connector->run();
