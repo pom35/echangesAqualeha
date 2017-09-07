@@ -1,10 +1,8 @@
 <?php
-
 // error_reporting(0); // Set E_ALL for debuging
 error_reporting(E_ALL); // Set E_ALL for debuging
-
-define('ROOT_PATH', 'c:/files');
-define('ROOT_PATH_AUDITEUR', 'c:/files/auditeurs');
+define('ROOT_PATH', '../');
+define('FILES_PATH', ROOT_PATH.'../files');
 
 /***** auth section *****/
 $admins = array('admin' => true);
@@ -33,6 +31,8 @@ include_once dirname(__FILE__).DIRECTORY_SEPARATOR.'elFinder.class.php';
 include_once dirname(__FILE__).DIRECTORY_SEPARATOR.'elFinderVolumeDriver.class.php';
 include_once dirname(__FILE__).DIRECTORY_SEPARATOR.'elFinderVolumeLocalFileSystem.class.php';
 include_once dirname(__FILE__).DIRECTORY_SEPARATOR.'logger.class.php';
+include_once dirname(__FILE__).'/../vendor/firebase/php-jwt/src/JWT.php';
+use \Firebase\JWT\JWT;
 
 // Required for MySQL storage connector
 // include_once dirname(__FILE__).DIRECTORY_SEPARATOR.'elFinderVolumeMySQL.class.php';
@@ -75,6 +75,12 @@ function roaccess($attr, $path, $data, $volume) {
 }
 
 
+
+// $array = array('login' => $username, 'dt_exp' => date('Y-m-d'));
+// $jwt = JWT::encode(json_encode($array), 'eb4fa84c1f979473eb1cd2745019c79f');
+// echo $jwt;
+
+
 $logFile = 'c:/files/temp/log_'.date('Y-m-d').'.txt';
 $myLogger = new elFinderSimpleLogger($logFile);
 /**
@@ -82,7 +88,7 @@ $myLogger = new elFinderSimpleLogger($logFile);
  * sinon, créer le dossier et n'afficher que celui là
  */
 if($isAdmin){
-	$path =  ROOT_PATH.'/';
+	$path =  FILES_PATH.'/';
 	// Documentation for connector options:
 	// https://github.com/Studio-42/elFinder/wiki/Connector-configuration-options
 	$opts = array(
@@ -90,18 +96,19 @@ if($isAdmin){
 			'roots' => array(
 					array(
 							'driver'        => 'LocalFileSystem',           // driver for accessing file system (REQUIRED)
-							'path'          => ROOT_PATH,                 		// path to files (REQUIRED)
+							'path'          => FILES_PATH,                 		// path to files (REQUIRED)
 							'URL'           => dirname($_SERVER['PHP_SELF']) . '/'.$path, // URL to files (REQUIRED)
 							'uploadDeny'    => array('all'),                // All Mimetypes not allowed to upload
 							'uploadAllow'   => array('image', 'text/plain'),// Mimetype `image` and `text/plain` allowed to upload
 							'uploadOrder'   => array('deny', 'allow'),      // allowed Mimetype `image` and `text/plain` only
-							'accessControl' => 'rwaccess'
+							'accessControl' => 'rwaccess',
+							'uploadMaxSize' => 100000000
 					)
 			)
 	);
 	
-}else{
-	$path =  ROOT_PATH.'/'.$username.'/';
+}elseif(!$_SESSION['token']){
+	$path =  FILES_PATH.'/'.$username.'/';
 	if(!is_dir($path)){
 		mkdir($path);
 	}
@@ -117,13 +124,30 @@ if($isAdmin){
 							'uploadDeny'    => array('all'),                // All Mimetypes not allowed to upload
 							'uploadAllow'   => array('image', 'text/plain'),// Mimetype `image` and `text/plain` allowed to upload
 							'uploadOrder'   => array('deny', 'allow'),      // allowed Mimetype `image` and `text/plain` only
-							'accessControl' => 'rwaccess'
+							'accessControl' => 'rwaccess',
+							'uploadMaxSize' => 100000000,
+					)
+			)
+	);
+}else{
+	$path =  FILES_PATH.'/'.$username.'/';
+	$opts = array(
+			// 'debug' => true,
+			'roots' => array(
+					array(
+							'driver'        => 'LocalFileSystem',           // driver for accessing file system (REQUIRED)
+							'path'          => $path,                 		// path to files (REQUIRED)
+							'URL'           => dirname($_SERVER['PHP_SELF']) . '/'.$path, // URL to files (REQUIRED)
+							'uploadDeny'    => array('all'),                // All Mimetypes not allowed to upload
+							'uploadAllow'   => array('image', 'text/plain'),// Mimetype `image` and `text/plain` allowed to upload
+							'uploadOrder'   => array('deny', 'allow'),      // allowed Mimetype `image` and `text/plain` only
+							'accessControl' => 'roaccess',
 					)
 			)
 	);
 }
 $opts['bind'] = array(
-		'mkdir mkfile rename duplicate upload rm paste' => array($myLogger, 'log'),
+		'mkdir mkfile rename duplicate upload rm paste download' => array($myLogger, 'log'),
 );
 // run elFinder
 $connector = new elFinderConnector(new elFinder($opts));

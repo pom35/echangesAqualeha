@@ -1,6 +1,10 @@
 <?php
-session_start();
+include_once dirname(__FILE__).'/vendor/firebase/php-jwt/src/JWT.php';
+use \Firebase\JWT\JWT;
+define('ROOT_PATH', '');
+define('FILES_PATH', ROOT_PATH.'../files');
 
+session_start();
 //function disconnectToAd : Déconnexion au serveur de l'ad
 function disconnectToAD($ldapbind) {
 	return ldap_unbind($ldapbind);
@@ -23,7 +27,33 @@ if(isset($_GET['logout'])){
     exit();
 }
 
-if(!isset($_SESSION['authorized'])){
+$has_token = false;
+// check la présence d'un token
+if($_GET['t']){
+	$badToken = false;
+	try {
+		$jwt= $_GET['t'];
+		$token = JWT::decode($jwt, 'eb4fa84c1f979473eb1cd2745019c79f', array('HS256'));
+		$result = json_decode($token);
+	} catch (Exception $e) {
+		$badToken = true;
+	}
+	
+	if(!$badToken){
+		$path = FILES_PATH.'/'.$result->login;
+		$isExpired = strtotime($result->dt_exp) > time();
+		
+		if(is_dir($path) && !$isExpired){
+			$has_token = true;
+			$_SESSION['ELFINDER_AUTH_USER'] = $result->login;
+			$_SESSION['authorized'] = true;
+			$_SESSION['token'] = true;
+		}
+	}
+}
+
+if(!$has_token && !isset($_SESSION['authorized'])){
+	
 	if(isset($_POST['submit'])){
 		$ldaphost = 'dc1-aqualeha';
 		$ldapconn= ldap_connect($ldaphost) or die("Could not connect to $ldaphost");
