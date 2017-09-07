@@ -11,9 +11,10 @@ function disconnectToAD($ldapbind) {
 }
 
 function getUserAD($ldapcon, $login) {
+	
 	$ldaprdn  = 'OU=Utilisateurs,DC=AQUALEHA,DC=LAN'; // DN ou RDN LDAP
 	$filtre="(|(sAMAccountName=".$login."))";
-	$restriction = array("sn", "givenname", "mail", "dn");
+	$restriction = array("sn", "givenname", "mail", "dn", "division");
 	
 	$result = ldap_search($ldapcon, $ldaprdn, $filtre, $restriction);
 	$info = ldap_get_entries($ldapcon, $result);
@@ -29,7 +30,7 @@ if(isset($_GET['logout'])){
 
 $has_token = false;
 // check la présence d'un token
-if($_GET['t']){
+if(isset($_GET['t'])){
 	$badToken = false;
 	try {
 		$jwt= $_GET['t'];
@@ -66,7 +67,8 @@ if(!$has_token && !isset($_SESSION['authorized'])){
 			
 			if ($ldapbind) {
 				//Connexion LDAP réussie
-				$user_info = getUserAD($ldapconn, $_POST['username']);
+				
+				$_SESSION['user_info'] = getUserAD($ldapconn, $_POST['username']);
 				$_SESSION['authorized'] = true;
 				$_SESSION['ELFINDER_AUTH_USER'] = $_POST['username'];
 				disconnectToAD($ldapconn);

@@ -107,8 +107,16 @@ if($isAdmin){
 			)
 	);
 	
-}elseif(!$_SESSION['token']){
-	$path =  FILES_PATH.'/'.$username.'/';
+}elseif(!isset($_SESSION['token'])){
+	$division = '';
+	if($_SESSION['user_info'][0]['division']){
+		$division = $_SESSION['user_info'][0]['division'][0].'/';
+	}
+	$divisionPath = FILES_PATH.'/'.$division;
+	if(!is_dir($divisionPath)){
+		mkdir($divisionPath);
+	}
+	$path =  FILES_PATH.'/'.$division.$username.'/';
 	if(!is_dir($path)){
 		mkdir($path);
 	}
