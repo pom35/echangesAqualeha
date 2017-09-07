@@ -25,7 +25,8 @@
         }
     ],
     "require": {
-        "php": ">=5.2"
+        "php": ">=5.2",
+        "firebase/php-jwt": "dev-master"
     },
     "suggest": {
         "kunalvarma05/dropbox-php-sdk": "VolumeDriver `Dropbox`2 require `kunalvarma05/dropbox-php-sdk.",
