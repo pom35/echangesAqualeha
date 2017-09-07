@@ -7,7 +7,7 @@
  * @package elFinder
  * @author Dmitry (dio) Levashov
  **/
-class elFinderSimpleLogger {
+class elFinderLogger {
 	
 	/**
 	 * Log file path
@@ -41,7 +41,13 @@ class elFinderSimpleLogger {
 	 * @author Dmitry (dio) Levashov
 	 **/
 	public function log($cmd, $result, $args, $elfinder) {
-		$log = $_SESSION['ELFINDER_AUTH_USER'].' => '.$cmd.' ['.date('d.m H:s')."]\n";
+		
+		if($cmd != 'file'){
+			$log = $_SESSION['ELFINDER_AUTH_USER'].' => '.$cmd.' ['.date('d.m H:s')."]\n";
+		}else{
+			$log = $_SESSION['ELFINDER_AUTH_USER'].' => download ['.date('d.m H:s')."] : ".$result['info']['path']."\n";
+		}
+		
 		
 		if (!empty($result['error'])) {
 			$log .= "\tERROR: ".implode(' ', $result['error'])."\n";
