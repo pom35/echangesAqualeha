@@ -3,6 +3,7 @@ include_once dirname(__FILE__).'/vendor/firebase/php-jwt/src/JWT.php';
 use \Firebase\JWT\JWT;
 define('ROOT_PATH', '');
 define('FILES_PATH', ROOT_PATH.'../files');
+define('FILES_PATH_ABS', str_replace('\\', '/', realpath(FILES_PATH)));
 
 session_start();
 //function disconnectToAd : Déconnexion au serveur de l'ad
@@ -41,12 +42,16 @@ if(isset($_GET['t'])){
 		$badToken = true;
 	}
 	
+	$result->path = str_replace('\\', '/', $result->path);
+	$result->path = str_replace(FILES_PATH_ABS, '', $result->path);
+	$result->path = str_replace($result->login, '', $result->path);
 	if(!$badToken){
-		$path = FILES_PATH.'/echanges/'.$result->login;
+		$path = FILES_PATH.$result->path.$result->login;
 		$isExpired = strtotime($result->dt_exp) < time();
 		if(is_dir($path) && !$isExpired){
 			$has_token = true;
-			$_SESSION['ELFINDER_AUTH_USER'] = 'echanges/'.$result->login;
+			$_SESSION['ELFINDER_AUTH_USER'] = $result->path.$result->login;
+			
 			$_SESSION['authorized'] = true;
 			$_SESSION['token'] = true;
 		}

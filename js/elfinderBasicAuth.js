@@ -77,6 +77,10 @@ elFinder.prototype.commands.login = function() {
 					fm.notify({type : 'reload', cnt : 1, hideCnt : true});
 					dfd.always(function() { fm.notify({type : 'reload', cnt  : -1}); });
 				}, fm.notifyDelay);
+				if(res.uname ==""){
+					window.location.replace("elfinder.php");
+					return;
+				}
 				location.reload();
 			}
 		});
