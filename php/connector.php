@@ -5,7 +5,7 @@ define('ROOT_PATH', '../');
 define('FILES_PATH', ROOT_PATH.'../files');
 
 /***** auth section *****/
-$admins = array('admin' => true);
+$admins = array('pomadec' => true);
 
 session_start();
 
@@ -31,16 +31,9 @@ include_once dirname(__FILE__).DIRECTORY_SEPARATOR.'elFinder.class.php';
 include_once dirname(__FILE__).DIRECTORY_SEPARATOR.'elFinderVolumeDriver.class.php';
 include_once dirname(__FILE__).DIRECTORY_SEPARATOR.'elFinderVolumeLocalFileSystem.class.php';
 include_once dirname(__FILE__).DIRECTORY_SEPARATOR.'logger.class.php';
-include_once dirname(__FILE__).'/../vendor/firebase/php-jwt/src/JWT.php';
-use \Firebase\JWT\JWT;
-
-//TODO génération du token 
-// $array = array('login' => $username, 'dt_exp' => date('Y-m-d'));
-// $jwt = JWT::encode(json_encode($array), 'eb4fa84c1f979473eb1cd2745019c79f');
-// echo $jwt;
 
 
-$logFile = 'c:/files/temp/log_'.date('Y-m-d').'.txt';
+$logFile = FILES_PATH.'/.temp/log_'.date('Y-m-d').'.txt';
 $myLogger = new elFinderLogger($logFile);
 /**
  * si c'est un dossier => ok
