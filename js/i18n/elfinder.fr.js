@@ -156,6 +156,7 @@
 			'cmdfullscreen': 'Plein écran', // from v2.1.15 added 03.08.2016
 			'cmdmove'      : 'Déplacer', // from v2.1.15 added 21.08.2016
 			'cmdempty'     : 'Vider le dossier', // from v2.1.25 added 22.06.2017
+			'cmdsendmail'  : 'Envoyer par mail',
 
 			/*********************************** buttons ***********************************/
 			'btnClose'  : 'Fermer',

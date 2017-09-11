@@ -165,6 +165,7 @@
 .elfinder-button-icon-selectall { background-position: 0 -928px; }
 .elfinder-button-icon-selectnone { background-position: 0 -944px; }
 .elfinder-button-icon-selectinvert { background-position: 0 -960px; }
+.elfinder-button-icon-sendmail { background-position: 0 -528px; }
 
 /* button with dropdown menu*/
 .elfinder .elfinder-menubutton { overflow:visible; }

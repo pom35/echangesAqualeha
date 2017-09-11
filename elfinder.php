@@ -30,6 +30,7 @@ if(isset($_GET['logout'])){
 
 $has_token = false;
 // check la présence d'un token
+
 if(isset($_GET['t'])){
 	$badToken = false;
 	try {
@@ -41,12 +42,11 @@ if(isset($_GET['t'])){
 	}
 	
 	if(!$badToken){
-		$path = FILES_PATH.'/'.$result->login;
-		$isExpired = strtotime($result->dt_exp) > time();
-		
+		$path = FILES_PATH.'/echanges/'.$result->login;
+		$isExpired = strtotime($result->dt_exp) < time();
 		if(is_dir($path) && !$isExpired){
 			$has_token = true;
-			$_SESSION['ELFINDER_AUTH_USER'] = $result->login;
+			$_SESSION['ELFINDER_AUTH_USER'] = 'echanges/'.$result->login;
 			$_SESSION['authorized'] = true;
 			$_SESSION['token'] = true;
 		}
@@ -209,6 +209,7 @@ if(!$has_token && !isset($_SESSION['authorized'])){
 	<script src="js/commands/up.js"></script>
 	<script src="js/commands/upload.js"></script>
 	<script src="js/commands/view.js"></script>
+	<script src="js/commands/sendmail.js"></script>
 
 	<!-- elfinder 1.x connector API support (OPTIONAL) -->
 	<script src="js/proxy/elFinderSupportVer1.js"></script>
@@ -233,6 +234,7 @@ if(!$has_token && !isset($_SESSION['authorized'])){
 							// https://github.com/Studio-42/elFinder/wiki/Client-configuration-options
 							baseUrl : './',
 							lang : lng,
+							allowShortcuts : false,
 							url	 : 'php/connector.php'	// connector URL (REQUIRED)
 						}).elfinder('instance');
 					});
