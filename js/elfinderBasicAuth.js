@@ -55,7 +55,7 @@ elFinder.prototype.commands.login = function() {
 					self.update(void(0), self.value);
 				});
 			}
-		} 
+		}
 	};
 	
 	this.getstate = function() {

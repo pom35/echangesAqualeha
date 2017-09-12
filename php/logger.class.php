@@ -46,6 +46,10 @@ class elFinderLogger {
 			$log = $_SESSION['ELFINDER_AUTH_USER'].' => '.$cmd.' ['.date('d.m H:s')."]\n";
 		}else{
 			$log = $_SESSION['ELFINDER_AUTH_USER'].' => download ['.date('d.m H:s')."] : ".$result['info']['path']."\n";
+			if(isset($_SESSION['token'])){
+				$log .= "ip => ".$_SERVER['REMOTE_ADDR']."\n";
+				$log .= "token => ".$_SESSION['token']."\n";	
+			}
 		}
 		
 		

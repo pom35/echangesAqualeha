@@ -7,6 +7,7 @@
 elFinder.prototype.commands.sendmail= function() {
 	var fm  = this.fm;
 	var filename;
+	var filepath;
 	var dialog;
     this.exec = function(hashes) {
         //implement what the custom command should do her
@@ -31,7 +32,7 @@ elFinder.prototype.commands.sendmail= function() {
     	 $('#dialog-form').remove();
     	 $('body').append(dialog_html);
     	 
-//    	 var path0 = this.fm.path(files[0].hash);
+	 	filepath = this.fm.path(files[0].hash);
 	    dialog = $( "#dialog-form" ).dialog({
 	        autoOpen: false,
 	        height: 400,
@@ -80,6 +81,7 @@ elFinder.prototype.commands.sendmail= function() {
         	return false;
         }
         indexed_array['filename'] = filename;
+        indexed_array['filepath'] = filepath;
         //appel ajax pour récupérer le token
         $.post( {
 			url: 'token.php',
