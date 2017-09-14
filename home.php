@@ -155,7 +155,7 @@
 	else if (lng == 'pt') lng = 'pt_BR';
 	else if (lng == 'zh') lng = (full_lng.substr(0,5) == 'zh-tw')? 'zh_TW' : 'zh_CN';
 	
-	if (lng != 'en') {
+	if (lng != 'fr') {
 		$.ajax({
 			url : i18nPath+'/elfinder.'+lng+'.js',
 			cache : true,

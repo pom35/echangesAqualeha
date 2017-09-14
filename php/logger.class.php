@@ -52,7 +52,6 @@ class elFinderLogger {
 			}
 		}
 		
-		
 		if (!empty($result['error'])) {
 			$log .= "\tERROR: ".implode(' ', $result['error'])."\n";
 		}
