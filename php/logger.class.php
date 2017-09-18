@@ -89,7 +89,7 @@ class elFinderLogger {
 	 * @return void
 	 * @author Dmitry (dio) Levashov
 	 **/
-	protected function write($log) {
+	public function write($log) {
 		if (($fp = @fopen($this->file, 'a'))) {
 			fwrite($fp, $log."\n");
 			fclose($fp);

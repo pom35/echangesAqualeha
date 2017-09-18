@@ -32,6 +32,9 @@ if(isset($_POST['submit'])){
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2" />
 	</head>
 <body>
+	<?php if(isset($badToken) && $badToken):?>
+		<div style="color:red">Mauvais token</div>
+	<?php endif;?>
 	<?php if(isset($isExpired) && $isExpired):?>
 		<div style="color:red">Ce lien a expiré</div>
 	<?php endif;?>

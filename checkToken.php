@@ -1,4 +1,7 @@
 <?php 
+include_once dirname(__FILE__).'/vendor/firebase/php-jwt/src/JWT.php';
+include_once dirname(__FILE__).'/php/'.'logger.class.php';
+use \Firebase\JWT\JWT;
 $has_token = false;
 // check la présence d'un token
 if(isset($_GET['t'])){
@@ -10,11 +13,11 @@ if(isset($_GET['t'])){
 	} catch (Exception $e) {
 		$badToken = true;
 	}
-	
-	$result->path = str_replace('\\', '/', $result->path);
-	$result->path = str_replace(FILES_PATH_ABS, '', $result->path);
-	$result->path = str_replace($result->login, '', $result->path);
+
 	if(!$badToken){
+		$result->path = str_replace('\\', '/', $result->path);
+		$result->path = str_replace(FILES_PATH_ABS, '', $result->path);
+		$result->path = str_replace($result->login, '', $result->path);
 		$path = FILES_PATH.$result->path.$result->login;
 		$isExpired = strtotime($result->dt_exp) < time();
 		if(is_dir($path) && !$isExpired){
@@ -24,5 +27,11 @@ if(isset($_GET['t'])){
 			//on enregistre le token pour les logs
 			$_SESSION['token'] = $jwt;
 		}
+	}else{
+		//TODO log du token
+		$logFile = FILES_PATH.'/.temp/log_'.date('Y-m-d').'.txt';
+		$myLogger = new elFinderLogger($logFile);
+		$log = 'bad token => ['.date('d.m H:s')."] : $jwt\n";
+		$myLogger->write($log);
 	}
 }

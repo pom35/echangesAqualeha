@@ -1,6 +1,4 @@
 <?php
-include_once dirname(__FILE__).'/vendor/firebase/php-jwt/src/JWT.php';
-use \Firebase\JWT\JWT;
 define('ROOT_PATH', '');
 define('FILES_PATH', ROOT_PATH.'../files');
 define('FILES_PATH_ABS', str_replace('\\', '/', realpath(FILES_PATH)));
