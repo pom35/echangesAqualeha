@@ -78,7 +78,7 @@ elFinder.prototype.commands.login = function() {
 					dfd.always(function() { fm.notify({type : 'reload', cnt  : -1}); });
 				}, fm.notifyDelay);
 				if(res.uname ==""){
-					window.location.replace("elfinder.php");
+					window.location.replace("index.php");
 					return;
 				}
 				location.reload();

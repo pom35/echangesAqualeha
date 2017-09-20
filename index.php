@@ -23,7 +23,7 @@ function getUserAD($ldapcon, $login) {
 
 if(isset($_GET['logout'])){
     session_destroy();
-    header('Location: elfinder.php');
+    header('Location: index.php');
     exit();
 }
 

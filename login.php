@@ -18,7 +18,7 @@ if(isset($_POST['submit'])){
 			} else {
 				session_destroy();
 			}
-			header('Location: elfinder.php');
+			header('Location: index.php');
 			exit();
 		}
 	}
