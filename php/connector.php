@@ -1,17 +1,17 @@
 <?php
 // error_reporting(0); // Set E_ALL for debuging
-error_reporting(E_ALL); // Set E_ALL for debuging
-define('ROOT_PATH', '../');
-define('FILES_PATH', ROOT_PATH.'../files');
+error_reporting(0); // Set E_ALL for debuging
+define('ROOT_PATH', '../'); //défini la racine de l'appli
+define('FILES_PATH', ROOT_PATH.'../files'); //défini la racine des fichiers par rapport à l'appli 
+define('MAX_UPLOAD', '1'); //défini la racine des fichiers par rapport à l'appli
 
 /***** auth section *****/
-$admins = array('pomadec' => true);
+$admins = array('admin' => true);
 
 session_start();
 
 if(isset($_GET['logout'])){
 	session_destroy();
-// 	header('Location: elfinder.php');
 	echo '{"uname": ""}';
 	exit();
 }
@@ -62,18 +62,22 @@ if($isAdmin){
 }elseif(!isset($_SESSION['token'])){
 	$division = '';
 	if($_SESSION['user_info'][0]['division']){
-		$division = $_SESSION['user_info'][0]['division'][0].'/';
+		$division = $_SESSION['user_info'][0]['division'][0];
 	}
-	$divisionPath = FILES_PATH.'/'.$division;
-	if(!is_dir($divisionPath)){
-		mkdir($divisionPath);
+	$path= FILES_PATH;
+	if($division){
+		$path.= '/'.$division;
+		if(!is_dir($path)){
+			mkdir($path);
+		}
+	}else{
+		$path .= '/'.$username.'/';
+		if(!is_dir($path)){
+			mkdir($path);
+		}
 	}
-	$path =  FILES_PATH.'/'.$division.$username.'/';
-	if(!is_dir($path)){
-		mkdir($path);
-	}
-	// Documentation for connector options:
-	// https://github.com/Studio-42/elFinder/wiki/Connector-configuration-options
+	$GLOBALS['path'] = $path;
+	
 	$opts = array(
 			// 'debug' => true,
 			'roots' => array(
@@ -83,7 +87,7 @@ if($isAdmin){
 							'URL'           => dirname($_SERVER['PHP_SELF']) . '/'.$path, // URL to files (REQUIRED)
 							'uploadDeny'    => array('all'),                // All Mimetypes not allowed to upload
 							'uploadAllow'   => array('image', 'text/plain'),// Mimetype `image` and `text/plain` allowed to upload
-							'uploadOrder'   => array('deny', 'allow'),      // allowed Mimetype `image` and `text/plain` only
+							'uploadOrder'   => array('deny', 'allow'),      // ordre d'utilisation blacklist / whitelist
 							'accessControl' => 'rwaccess',
 							'uploadMaxSize' => 100000000,
 					)
@@ -100,7 +104,7 @@ if($isAdmin){
 							'URL'           => dirname($_SERVER['PHP_SELF']) . '/'.$path, // URL to files (REQUIRED)
 							'uploadDeny'    => array('all'),                // All Mimetypes not allowed to upload
 							'uploadAllow'   => array('image', 'text/plain'),// Mimetype `image` and `text/plain` allowed to upload
-							'uploadOrder'   => array('deny', 'allow'),      // allowed Mimetype `image` and `text/plain` only
+							'uploadOrder'   => array('deny', 'allow'),      // ordre d'utilisation blacklist / whitelist
 							'accessControl' => 'roaccess',
 					)
 			)
@@ -112,8 +116,6 @@ $opts['bind'] = array(
 // run elFinder
 $connector = new elFinderConnector(new elFinder($opts));
 $connector->run();
-
-
 
 function rwaccess($attr, $path, $data, $volume) {
 	return strpos(basename($path), '.') === 0       // if file/folder begins with '.' (dot)
